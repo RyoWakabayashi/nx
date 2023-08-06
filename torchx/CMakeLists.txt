@@ -35,20 +35,15 @@ set_target_properties(torchx PROPERTIES
     BUILD_WITH_INSTALL_RPATH TRUE
 )
 
-if(NOT APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -shared")
-    set_target_properties(torchx PROPERTIES INSTALL_RPATH "\$ORIGIN/${LIBTORCH_BASE}")
-else()
-    # Although the compiler complains about not using these,
-    # things only work with them set
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -undefined dynamic_lookup")
-    check_c_compiler_flag("-arch arm64" ARM64_SUPPORTED)
-    if(ARM64_SUPPORTED)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAC_ARM64")
-    endif()
-    # set(CMAKE_SHARED_LINKER_FLAGS "-bundle -flat_namespace -undefined suppress")
-    set_target_properties(torchx PROPERTIES INSTALL_RPATH "@loader_path/${LIBTORCH_BASE}")
+# Although the compiler complains about not using these,
+# things only work with them set
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -undefined dynamic_lookup")
+check_c_compiler_flag("-arch arm64" ARM64_SUPPORTED)
+if(ARM64_SUPPORTED)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAC_ARM64")
 endif()
+# set(CMAKE_SHARED_LINKER_FLAGS "-bundle -flat_namespace -undefined suppress")
+set_target_properties(torchx PROPERTIES INSTALL_RPATH "@loader_path/${LIBTORCH_BASE}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3 -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers")
 else()
